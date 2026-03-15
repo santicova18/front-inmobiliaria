@@ -1,5 +1,5 @@
 const BASE_URL =
-    import.meta.env.VITE_API_URL || "http://proyecto-inmobiliario-production.up.railway.app";
+    import.meta.env.VITE_API_URL || "https://proyecto-inmobiliario-production.up.railway.app";
 
 async function request(endpoint, options = {}, token = null) {
     const headers = { "Content-Type": "application/json" };
