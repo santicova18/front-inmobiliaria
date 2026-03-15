@@ -34,10 +34,26 @@ export function LoginPage({ onNavigate }) {
     setLoading(true);
     try {
       const data = await api.login(form);
-      dispatch({ type: "SET_USER", payload: { user: data.user, token: data.token, role: data.user.rol } });
+      // Verificar que la respuesta contiene los datos esperados
+      if (!data.user || !data.token) {
+        throw new Error(data.message || "Respuesta inválida del servidor");
+      }
+      // El backend no devuelve 'rol', usamos un valor por defecto
+      const role = data.user.rol || data.user.rol_usuario || "usuario";
+      dispatch({ type: "SET_USER", payload: { user: data.user, token: data.token, role } });
       notify("Bienvenido de nuevo", "success");
     } catch (err) {
-      notify(err.message || "Credenciales incorrectas", "error");
+      // Mensajes de error personalizados según el tipo de error
+      const errorMessage = err.message?.toLowerCase() || "";
+      if (errorMessage.includes("invalid credentials") || errorMessage.includes("credenciales")) {
+        notify("Correo o contraseña incorrectos. Por favor verifica tus datos.", "error");
+      } else if (errorMessage.includes("verify") || errorMessage.includes("verific")) {
+        notify("Tu cuenta no está verificada. Revisa tu correo electrónico.", "error");
+      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
+        notify("Error de conexión. Verifica tu internet.", "error");
+      } else {
+        notify(err.message || "Error al iniciar sesión. Intenta de nuevo.", "error");
+      }
     } finally {
       setLoading(false);
     }
