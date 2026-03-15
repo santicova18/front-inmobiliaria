@@ -19,7 +19,7 @@ export const api = {
     // Auth
     login: (body) => request("/auth/login", { method: "POST", body: JSON.stringify(body) }),
     register: (body) => request("/auth/register", { method: "POST", body: JSON.stringify(body) }),
-    forgotPassword: (body) => request("/auth/forgot-password", { method: "POST", body: JSON.stringify(body) }),
+    forgotPassword: (body) => request(`/auth/forgot-password?email=${encodeURIComponent(body.email || body.correo)}`, { method: "POST" }),
     resetPassword: (body) => request("/auth/reset-password", { method: "POST", body: JSON.stringify(body) }),
 
     // Lotes

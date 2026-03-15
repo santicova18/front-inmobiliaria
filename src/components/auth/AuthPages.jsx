@@ -26,7 +26,7 @@ function AuthCard({ children, title, subtitle }) {
 
 export function LoginPage({ onNavigate }) {
   const { dispatch, notify } = useApp();
-  const [form, setForm] = useState({ correo: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e) => {
@@ -47,7 +47,7 @@ export function LoginPage({ onNavigate }) {
     <AuthCard title="Iniciar Sesión" subtitle="Accede a tu cuenta InmoLotes">
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label="Correo electrónico" type="email" placeholder="tu@correo.com"
-          value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} required />
+          value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
         <Input label="Contraseña" type="password" placeholder="••••••••"
           value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
         <div className="flex justify-end">
@@ -70,14 +70,14 @@ export function LoginPage({ onNavigate }) {
 
 export function RegisterPage({ onNavigate }) {
   const { notify } = useApp();
-  const [form, setForm] = useState({ nombre: "", correo: "", telefono: "", password: "", confirm: "" });
+  const [form, setForm] = useState({ nombre: "", email: "", telefono: "", password: "", confirm: "" });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validate = () => {
     const e = {};
     if (!form.nombre.trim()) e.nombre = "Nombre requerido";
-    if (!form.correo.includes("@")) e.correo = "Correo inválido";
+    if (!form.email.includes("@")) e.email = "Correo inválido";
     if (form.password.length < 8) e.password = "Mínimo 8 caracteres";
     if (form.password !== form.confirm) e.confirm = "Las contraseñas no coinciden";
     setErrors(e);
@@ -89,7 +89,7 @@ export function RegisterPage({ onNavigate }) {
     if (!validate()) return;
     setLoading(true);
     try {
-      await api.register({ nombre: form.nombre, correo: form.correo, telefono: form.telefono, password: form.password });
+      await api.register({ nombre: form.nombre, email: form.email, telefono: form.telefono, password: form.password });
       notify("Cuenta creada. Verifica tu correo.", "success");
       onNavigate("login");
     } catch (err) {
@@ -104,8 +104,8 @@ export function RegisterPage({ onNavigate }) {
       <form onSubmit={handleSubmit} className="space-y-4">
         <Input label="Nombre completo" placeholder="Juan Pérez" error={errors.nombre}
           value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
-        <Input label="Correo electrónico" type="email" placeholder="tu@correo.com" error={errors.correo}
-          value={form.correo} onChange={e => setForm({ ...form, correo: e.target.value })} />
+        <Input label="Correo electrónico" type="email" placeholder="tu@correo.com" error={errors.email}
+          value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
         <Input label="Teléfono" type="tel" placeholder="+57 300 000 0000"
           value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
         <Input label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" error={errors.password}
@@ -124,7 +124,7 @@ export function RegisterPage({ onNavigate }) {
 
 export function ForgotPasswordPage({ onNavigate }) {
   const { notify } = useApp();
-  const [correo, setCorreo] = useState("");
+  const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [sent, setSent] = useState(false);
 
@@ -132,7 +132,7 @@ export function ForgotPasswordPage({ onNavigate }) {
     e.preventDefault();
     setLoading(true);
     try {
-      await api.forgotPassword({ correo });
+      await api.forgotPassword({ email });
       setSent(true);
       notify("Revisa tu correo para el enlace de recuperación", "success");
     } catch (err) {
@@ -147,13 +147,13 @@ export function ForgotPasswordPage({ onNavigate }) {
       {sent ? (
         <div className="text-center py-6">
           <div className="text-4xl mb-4">📧</div>
-          <p className="text-slate-300 text-sm mb-6">Hemos enviado un enlace a <strong className="text-white">{correo}</strong>. Revisa tu bandeja de entrada.</p>
+          <p className="text-slate-300 text-sm mb-6">Hemos enviado un enlace a <strong className="text-white">{email}</strong>. Revisa tu bandeja de entrada.</p>
           <Button variant="outline" onClick={() => onNavigate("login")}>Volver al inicio de sesión</Button>
         </div>
       ) : (
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input label="Correo electrónico" type="email" placeholder="tu@correo.com"
-            value={correo} onChange={e => setCorreo(e.target.value)} required />
+            value={email} onChange={e => setEmail(e.target.value)} required />
           <Button type="submit" loading={loading} className="w-full">Enviar enlace</Button>
           <p className="text-center text-sm text-slate-400">
             <button type="button" onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300">← Volver</button>
