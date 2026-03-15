@@ -34,22 +34,34 @@ export function LoginPage({ onNavigate }) {
     setLoading(true);
     try {
       const data = await api.login(form);
-      // Verificar que la respuesta contiene los datos esperados
-      if (!data.user || !data.token) {
-        throw new Error(data.message || "Respuesta inválida del servidor");
+      
+      // El backend puede devolver diferentes estructuras:
+      // - {user, token}  
+      // - {access_token, token_type}
+      // - {access_token, user}
+      
+      // Buscar el token en cualquier位置
+      const token = data.token || data.access_token;
+      const user = data.user || data.usuario;
+      
+      if (!token) {
+        throw new Error(data.message || "El servidor no devolvió un token de acceso");
       }
-      // El backend no devuelve 'rol', usamos un valor por defecto
-      const role = data.user.rol || data.user.rol_usuario || "usuario";
-      dispatch({ type: "SET_USER", payload: { user: data.user, token: data.token, role } });
+      
+      // Si no hay objeto usuario, crear uno básico
+      const userData = user || { email: form.email };
+      const role = userData.rol || userData.rol_usuario || "usuario";
+      
+      dispatch({ type: "SET_USER", payload: { user: userData, token, role } });
       notify("Bienvenido de nuevo", "success");
     } catch (err) {
       // Mensajes de error personalizados según el tipo de error
       const errorMessage = err.message?.toLowerCase() || "";
       if (errorMessage.includes("invalid credentials") || errorMessage.includes("credenciales")) {
         notify("Correo o contraseña incorrectos. Por favor verifica tus datos.", "error");
-      } else if (errorMessage.includes("verify") || errorMessage.includes("verific")) {
+      } else if (errorMessage.includes("verify") || errorMessage.includes("verific") || errorMessage.includes("not verified")) {
         notify("Tu cuenta no está verificada. Revisa tu correo electrónico.", "error");
-      } else if (errorMessage.includes("network") || errorMessage.includes("fetch")) {
+      } else if (errorMessage.includes("network") || errorMessage.includes("fetch") || errorMessage.includes("token")) {
         notify("Error de conexión. Verifica tu internet.", "error");
       } else {
         notify(err.message || "Error al iniciar sesión. Intenta de nuevo.", "error");
