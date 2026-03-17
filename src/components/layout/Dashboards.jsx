@@ -16,7 +16,7 @@ export function AdminDashboard({ onNavigate }) {
     Promise.all([
       api.getLotes(state.token),
       api.getCompras(state.token),
-      api.getPagos(state.token),
+      Promise.resolve([]),        // ← reemplaza api.getPagos()
       api.getPQRS(state.token),
       api.getClientes(state.token),
     ]).then(([lotes, compras, pagos, pqrs, clientes]) => {
