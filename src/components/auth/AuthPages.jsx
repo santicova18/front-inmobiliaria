@@ -69,17 +69,15 @@ export function LoginPage({ onNavigate }) {
       dispatch({ type: "SET_USER", payload: { user: userData, token, role } });
       notify("Bienvenido de nuevo", "success");
     } catch (err) {
-      // Mensajes de error personalizados según el tipo de error
-      const errorMessage = err.message?.toLowerCase() || "";
-      if (errorMessage.includes("invalid credentials") || errorMessage.includes("credenciales")) {
-        notify("Correo o contraseña incorrectos. Por favor verifica tus datos.", "error");
-      } else if (errorMessage.includes("verify") || errorMessage.includes("verific") || errorMessage.includes("not verified")) {
-        notify("Tu cuenta no está verificada. Revisa tu correo electrónico.", "error");
-      } else if (errorMessage.includes("network") || errorMessage.includes("fetch") || errorMessage.includes("token")) {
-        notify("Error de conexión. Verifica tu internet.", "error");
-      } else {
-        notify(err.message || "Error al iniciar sesión. Intenta de nuevo.", "error");
-      }
+      const msg = err.message?.toLowerCase() || "";
+      if (msg.includes("invalid credentials"))
+        notify("❌ Correo o contraseña incorrectos.", "error");
+      else if (msg.includes("not verified"))
+        notify("📧 Tu cuenta no está verificada. Revisa tu correo.", "error");
+      else if (msg.includes("not active"))
+        notify("🚫 Tu cuenta está desactivada. Contacta al administrador.", "error");
+      else
+        notify("⚠️ Error al iniciar sesión. Intenta de nuevo.", "error");
     } finally {
       setLoading(false);
     }
@@ -124,7 +122,11 @@ export function RegisterPage({ onNavigate }) {
       notify("Cuenta creada. Verifica tu correo.", "success");
       setSuccess(true);
     } catch (err) {
-      notify(err.message, "error");
+      const msg = err.message?.toLowerCase() || "";
+      if (msg.includes("already registered") || msg.includes("already exists"))
+        notify("⚠️ Este correo ya está registrado. Intenta iniciar sesión.", "error");
+      else
+        notify("❌ Error al crear la cuenta. Intenta de nuevo.", "error");
     } finally {
       setLoading(false);
     }
@@ -175,7 +177,7 @@ export function ForgotPasswordPage({ onNavigate }) {
       await api.forgotPassword({ email });
       setSent(true);
     } catch (err) {
-      notify(err.message, "error");
+      notify("⚠️ Hubo un problema al enviar el correo. Intenta más tarde.", "error");
     } finally {
       setLoading(false);
     }
