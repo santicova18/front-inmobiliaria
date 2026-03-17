@@ -91,13 +91,21 @@ export function AppProvider({ children }) {
       }
       
       // Cargar datos iniciales (lotes, clientes)
-      Promise.all([
-        api.getLotes(state.token).catch(() => []),
-        api.getClientes(state.token).catch(() => [])
-      ]).then(([lotes, clientes]) => {
-        if (lotes.length > 0) dispatch({ type: "SET_LOTES", payload: lotes });
-        if (clientes.length > 0) dispatch({ type: "SET_CLIENTES", payload: clientes });
-      }).catch(() => {});
+      // Lotes: los cargan todos (admin y cliente)
+      api.getLotes(state.token)
+        .then(lotes => {
+          if (lotes?.length > 0) dispatch({ type: "SET_LOTES", payload: lotes });
+        })
+        .catch(() => {});
+
+      // Clientes: solo admin (evita 403 para usuarios)
+      if (state.role === "admin") {
+        api.getClientes(state.token)
+          .then(clientes => {
+            if (clientes?.length > 0) dispatch({ type: "SET_CLIENTES", payload: clientes });
+          })
+          .catch(() => {});
+      }
     } else {
       localStorage.removeItem("inmolotes_session");
     }

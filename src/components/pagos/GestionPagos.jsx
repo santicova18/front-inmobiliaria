@@ -312,10 +312,17 @@ export function MisCuentas() {
   const [tab, setTab] = useState(0);
 
   useEffect(() => {
-    Promise.all([
-      api.getComprasByCliente(state.user.id, state.token),
-      api.getPagos(state.token),
-    ]).then(([c, p]) => { setCompras(c); setPagos(p.filter(pago => c.some(compra => compra.id === pago.compra_id))); })
+    // api.getPagos() apunta a /pagos que es solo admin → 404 para clientes
+    // api.getMisCompras() apunta a /pagos/mis-compras → correcto para clientes
+    api.getMisCompras(state.token)
+      .then(c => {
+        setCompras(c);
+        const pagosList = c.flatMap(compra =>
+          (compra.pagos || []).map(p => ({ ...p, compra_id: compra.id }))
+        );
+        setPagos(pagosList);
+      })
+      .catch(() => {})
       .finally(() => setFetching(false));
   }, []);
 
