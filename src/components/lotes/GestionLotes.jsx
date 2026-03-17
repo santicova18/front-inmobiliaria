@@ -277,3 +277,62 @@ export function CatalogoTipologias() {
     </div>
   );
 }
+
+// ─── Catálogo de Lotes para Clientes ─────────────────────────────────────────────────
+export function CatalogoLotes() {
+  const { state } = useApp();
+  const [fetching, setFetching] = useState(true);
+  const [lotes, setLotes] = useState([]);
+
+  useEffect(() => {
+    api.getLotes(state.token)
+      .then(data => setLotes(data.filter(l => l.estado === "Disponible")))
+      .catch(() => {})
+      .finally(() => setFetching(false));
+  }, []);
+
+  if (fetching) return (
+    <div className="flex justify-center py-20 text-teal-400">
+      <div className="w-8 h-8 border-2 border-current border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
+
+  return (
+    <div className="p-6 max-w-7xl mx-auto">
+      <PageHeader
+        title="Lotes Disponibles"
+        subtitle="Explora los lotes disponibles en el proyecto"
+      />
+      {lotes.length === 0 ? (
+        <EmptyState icon="◈" title="Sin lotes disponibles" description="Por el momento no hay lotes disponibles" />
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+          {lotes.map(lote => (
+            <Card key={lote.id} className="p-5 hover:border-teal-600 transition-colors">
+              <div className="flex items-start justify-between mb-3">
+                <div>
+                  <h3 className="font-bold text-white text-sm">Lote #{lote.id}</h3>
+                  <p className="text-slate-400 text-xs mt-0.5">{lote.ubicacion}</p>
+                </div>
+                <Badge variant="success">Disponible</Badge>
+              </div>
+              <div className="grid grid-cols-2 gap-2 mb-4">
+                <div className="bg-slate-900 rounded-lg p-2.5">
+                  <p className="text-xs text-slate-500 mb-0.5">Área</p>
+                  <p className="text-white font-semibold text-sm">{lote.area_m2} m²</p>
+                </div>
+                <div className="bg-slate-900 rounded-lg p-2.5">
+                  <p className="text-xs text-slate-500 mb-0.5">Valor</p>
+                  <p className="text-teal-400 font-semibold text-sm">${Number(lote.valor).toLocaleString("es-CO")}</p>
+                </div>
+              </div>
+              <div className="bg-slate-800 rounded-xl p-3 text-xs text-slate-400 text-center">
+                Para adquirir este lote contacta al administrador
+              </div>
+            </Card>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}

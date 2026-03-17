@@ -13,6 +13,7 @@ const adminNavItems = [
 
 const clienteNavItems = [
   { key: "dashboard", label: "Mi Panel", icon: "⬡" },
+  { key: "catalogo", label: "Comprar Lote", icon: "🏷️" },
   { key: "mis-lotes", label: "Mis Lotes", icon: "◈" },
   { key: "mis-pagos", label: "Mis Pagos", icon: "◆" },
   { key: "mis-pqrs", label: "Mis PQRS", icon: "◎" },

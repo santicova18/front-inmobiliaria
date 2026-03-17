@@ -3,7 +3,7 @@ import { AppProvider, useApp } from "./context/AppContext";
 import { Notification } from "./components/ui";
 import { Sidebar } from "./components/layout/Sidebar";
 import { LoginPage, RegisterPage, ForgotPasswordPage } from "./components/auth/AuthPages";
-import { GestionLotes, CatalogoTipologias } from "./components/lotes/GestionLotes";
+import { GestionLotes, CatalogoTipologias, CatalogoLotes } from "./components/lotes/GestionLotes";
 import { GestionPagos, RegistrarCompra, MisCuentas } from "./components/pagos/GestionPagos";
 import { AdminPQRS, FormularioPQRS } from "./components/pqrs/PQRS";
 import { InformacionProyecto } from "./components/proyecto/Proyecto";
@@ -55,6 +55,7 @@ function AppContent() {
     } else {
       switch (activePage) {
         case "dashboard": return <ClienteDashboard onNavigate={setActivePage} />;
+        case "catalogo": return <CatalogoLotes />;
         case "mis-lotes": return <MisCuentas />;
         case "mis-pagos": return <MisCuentas />;
         case "mis-pqrs": return <FormularioPQRS />;
