@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useApp } from "../../context/AppContext";
-import { api } from "../../utils/api";
+import { api, decodeJWT } from "../../utils/api";
 import { Button, Input } from "../ui";
 
 function AuthCard({ children, title, subtitle }) {
@@ -35,22 +35,36 @@ export function LoginPage({ onNavigate }) {
     try {
       const data = await api.login(form);
       
-      // El backend puede devolver diferentes estructuras:
-      // - {user, token}  
-      // - {access_token, token_type}
-      // - {access_token, user}
+      // El backend retorna: {"login successfuly": "token_aqui"}
+      // También puede retornar: {"access_token": "token_aqui", "token_type": "bearer"}
       
-      // Buscar el token en cualquier位置
-      const token = data.token || data.access_token;
-      const user = data.user || data.usuario;
+      // Buscar el token en cualquier formato
+      const token = data.token || data.access_token || data["login successfuly"];
       
       if (!token) {
         throw new Error(data.message || "El servidor no devolvió un token de acceso");
       }
       
-      // Si no hay objeto usuario, crear uno básico
-      const userData = user || { email: form.email };
-      const role = userData.rol || userData.rol_usuario || "usuario";
+      // Decodificar el JWT para obtener información del usuario
+      const decoded = decodeJWT(token);
+      
+      // El backend usa rol_id: 1 = Administrador, 2 = Cliente (u otro)
+      // También puede tener email en el token
+      let role = "cliente";
+      if (decoded && decoded.rol_id) {
+        // Ajusta según tu lógica de roles
+        // rol_id = 1 típicamente es admin
+        role = decoded.rol_id === 1 ? "admin" : "cliente";
+      }
+      
+      // Crear objeto de usuario con la información disponible
+      const userData = {
+        id: decoded?.sub || null,
+        email: decoded?.email || form.email,
+        nombre: decoded?.email?.split('@')[0] || "Usuario",
+        correo: decoded?.email || form.email,
+        rol_id: decoded?.rol_id || null,
+      };
       
       dispatch({ type: "SET_USER", payload: { user: userData, token, role } });
       notify("Bienvenido de nuevo", "success");
@@ -78,54 +92,55 @@ export function LoginPage({ onNavigate }) {
           value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} required />
         <Input label="Contraseña" type="password" placeholder="••••••••"
           value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
-        <div className="flex justify-end">
-          <button type="button" onClick={() => onNavigate("forgot")}
-            className="text-xs text-teal-400 hover:text-teal-300 transition-colors">
-            ¿Olvidaste tu contraseña?
-          </button>
-        </div>
-        <Button type="submit" loading={loading} className="w-full mt-2">Ingresar</Button>
-        <p className="text-center text-sm text-slate-400">
-          ¿No tienes cuenta?{" "}
-          <button type="button" onClick={() => onNavigate("register")} className="text-teal-400 hover:text-teal-300">
-            Regístrate
-          </button>
-        </p>
+        <Button className="w-full" loading={loading}>Iniciar Sesión</Button>
       </form>
+      <div className="mt-5 text-center text-sm text-slate-400">
+        ¿No tienes cuenta? <button onClick={() => onNavigate("register")} className="text-teal-400 hover:text-teal-300 font-medium">Regístrate</button>
+      </div>
+      <div className="mt-3 text-center">
+        <button onClick={() => onNavigate("forgot")} className="text-xs text-slate-500 hover:text-slate-400">¿Olvidaste tu contraseña?</button>
+      </div>
     </AuthCard>
   );
 }
 
 export function RegisterPage({ onNavigate }) {
   const { notify } = useApp();
-  const [form, setForm] = useState({ nombre: "", email: "", telefono: "", password: "", confirm: "" });
-  const [loading, setLoading] = useState(false);
+  const [form, setForm] = useState({ nombre: "", email: "", telefono: "", password: "" });
   const [errors, setErrors] = useState({});
-
-  const validate = () => {
-    const e = {};
-    if (!form.nombre.trim()) e.nombre = "Nombre requerido";
-    if (!form.email.includes("@")) e.email = "Correo inválido";
-    if (form.password.length < 8) e.password = "Mínimo 8 caracteres";
-    if (form.password !== form.confirm) e.confirm = "Las contraseñas no coinciden";
-    setErrors(e);
-    return Object.keys(e).length === 0;
-  };
+  const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!validate()) return;
+    const e2 = {};
+    if (!form.nombre.trim()) e2.nombre = "Nombre requerido";
+    if (!form.email.includes("@")) e2.email = "Correo inválido";
+    if (form.password.length < 6) e2.password = "Mínimo 6 caracteres";
+    if (Object.keys(e2).length > 0) { setErrors(e2); return; }
     setLoading(true);
     try {
       await api.register({ nombre: form.nombre, email: form.email, telefono: form.telefono, password: form.password });
       notify("Cuenta creada. Verifica tu correo.", "success");
-      onNavigate("login");
+      setSuccess(true);
     } catch (err) {
-      notify(err.message || "Error al registrar", "error");
+      notify(err.message, "error");
     } finally {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <AuthCard title="¡Cuenta Creada!" subtitle="Revisa tu correo para verificar tu cuenta">
+        <div className="text-center py-6">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-900/30 flex items-center justify-center text-emerald-400 text-2xl">✓</div>
+          <p className="text-slate-300 mb-4">Hemos enviado un correo de verificación a <strong>{form.email}</strong></p>
+          <Button variant="outline" onClick={() => onNavigate("login")}>Volver al Login</Button>
+        </div>
+      </AuthCard>
+    );
+  }
 
   return (
     <AuthCard title="Crear Cuenta" subtitle="Únete a InmoLotes hoy">
@@ -134,18 +149,15 @@ export function RegisterPage({ onNavigate }) {
           value={form.nombre} onChange={e => setForm({ ...form, nombre: e.target.value })} />
         <Input label="Correo electrónico" type="email" placeholder="tu@correo.com" error={errors.email}
           value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} />
-        <Input label="Teléfono" type="tel" placeholder="+57 300 000 0000"
+        <Input label="Teléfono (opcional)" placeholder="3001234567"
           value={form.telefono} onChange={e => setForm({ ...form, telefono: e.target.value })} />
-        <Input label="Contraseña" type="password" placeholder="Mínimo 8 caracteres" error={errors.password}
+        <Input label="Contraseña" type="password" placeholder="••••••••" error={errors.password}
           value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
-        <Input label="Confirmar contraseña" type="password" placeholder="••••••••" error={errors.confirm}
-          value={form.confirm} onChange={e => setForm({ ...form, confirm: e.target.value })} />
-        <Button type="submit" loading={loading} className="w-full mt-2">Registrarme</Button>
-        <p className="text-center text-sm text-slate-400">
-          ¿Ya tienes cuenta?{" "}
-          <button type="button" onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300">Inicia sesión</button>
-        </p>
+        <Button className="w-full" loading={loading}>Crear Cuenta</Button>
       </form>
+      <div className="mt-5 text-center text-sm text-slate-400">
+        ¿Ya tienes cuenta? <button onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300 font-medium">Inicia Sesión</button>
+      </div>
     </AuthCard>
   );
 }
@@ -162,32 +174,35 @@ export function ForgotPasswordPage({ onNavigate }) {
     try {
       await api.forgotPassword({ email });
       setSent(true);
-      notify("Revisa tu correo para el enlace de recuperación", "success");
     } catch (err) {
-      notify(err.message || "Error al enviar", "error");
+      notify(err.message, "error");
     } finally {
       setLoading(false);
     }
   };
 
-  return (
-    <AuthCard title="Recuperar Contraseña" subtitle="Te enviaremos un enlace de recuperación">
-      {sent ? (
+  if (sent) {
+    return (
+      <AuthCard title="Correo Enviado" subtitle="Hemos enviado instrucciones a tu correo">
         <div className="text-center py-6">
-          <div className="text-4xl mb-4">📧</div>
-          <p className="text-slate-300 text-sm mb-6">Hemos enviado un enlace a <strong className="text-white">{email}</strong>. Revisa tu bandeja de entrada.</p>
-          <Button variant="outline" onClick={() => onNavigate("login")}>Volver al inicio de sesión</Button>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-teal-900/30 flex items-center justify-center text-teal-400 text-2xl">✓</div>
+          <p className="text-slate-300 mb-4">Si el correo <strong>{email}</strong> existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.</p>
+          <Button variant="outline" onClick={() => onNavigate("login")}>Volver al Login</Button>
         </div>
-      ) : (
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <Input label="Correo electrónico" type="email" placeholder="tu@correo.com"
-            value={email} onChange={e => setEmail(e.target.value)} required />
-          <Button type="submit" loading={loading} className="w-full">Enviar enlace</Button>
-          <p className="text-center text-sm text-slate-400">
-            <button type="button" onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300">← Volver</button>
-          </p>
-        </form>
-      )}
+      </AuthCard>
+    );
+  }
+
+  return (
+    <AuthCard title="Recuperar Contraseña" subtitle="Ingresa tu correo electrónico">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <Input label="Correo electrónico" type="email" placeholder="tu@correo.com"
+          value={email} onChange={e => setEmail(e.target.value)} required />
+        <Button className="w-full" loading={loading}>Enviar Instrucciones</Button>
+      </form>
+      <div className="mt-5 text-center text-sm text-slate-400">
+        ¿Recordaste tu contraseña? <button onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300 font-medium">Inicia Sesión</button>
+      </div>
     </AuthCard>
   );
 }

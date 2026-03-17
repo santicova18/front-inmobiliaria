@@ -45,12 +45,10 @@ export function RegistrarCompra() {
     }
     setLoading(true);
     try {
+      // El backend espera: { usuario_id: int, lote_id: list[int] }
       const compra = await api.createCompra({
-        cliente_id: form.cliente_id,
-        lote_ids: form.lote_ids,
-        cuotas: form.cuotas,
-        valor_cuota: valorCuotaCalc,
-        valor_total: valorTotal,
+        usuario_id: parseInt(form.cliente_id),
+        lote_id: form.lote_ids,
       }, state.token);
       dispatch({ type: "ADD_COMPRA", payload: compra });
       notify("Compra registrada y lotes reservados", "success");

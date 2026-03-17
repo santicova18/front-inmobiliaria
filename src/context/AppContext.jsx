@@ -1,4 +1,5 @@
 import { createContext, useContext, useReducer, useEffect } from "react";
+import { api } from "../utils/api";
 
 const AppContext = createContext(null);
 
@@ -7,6 +8,7 @@ const initialState = {
   token: null,
   role: null, // 'admin' | 'cliente'
   lotes: [],
+  clientes: [],
   compras: [],
   pagos: [],
   pqrs: [],
@@ -22,6 +24,8 @@ function appReducer(state, action) {
       return { ...initialState };
     case "SET_LOTES":
       return { ...state, lotes: action.payload };
+    case "SET_CLIENTES":
+      return { ...state, clientes: action.payload };
     case "ADD_LOTE":
       return { ...state, lotes: [...state.lotes, action.payload] };
     case "UPDATE_LOTE":
@@ -76,11 +80,24 @@ export function AppProvider({ children }) {
     return init;
   });
 
+  // Cargar datos cuando el usuario inicia sesión O cuando se restaura desde localStorage
   useEffect(() => {
-    if (state.user) {
-      localStorage.setItem("inmolotes_session", JSON.stringify({
-        user: state.user, token: state.token, role: state.role
-      }));
+    if (state.token) {
+      // Guardar en localStorage si es nuevo login
+      if (!localStorage.getItem("inmolotes_session")) {
+        localStorage.setItem("inmolotes_session", JSON.stringify({
+          user: state.user, token: state.token, role: state.role
+        }));
+      }
+      
+      // Cargar datos iniciales (lotes, clientes)
+      Promise.all([
+        api.getLotes(state.token).catch(() => []),
+        api.getClientes(state.token).catch(() => [])
+      ]).then(([lotes, clientes]) => {
+        if (lotes.length > 0) dispatch({ type: "SET_LOTES", payload: lotes });
+        if (clientes.length > 0) dispatch({ type: "SET_CLIENTES", payload: clientes });
+      }).catch(() => {});
     } else {
       localStorage.removeItem("inmolotes_session");
     }
