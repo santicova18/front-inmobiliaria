@@ -151,7 +151,7 @@ export function GestionPagos() {
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    Promise.all([api.getCompras(state.token), api.getPagos(state.token)])
+    Promise.all([api.getCompras(state.token), Promise.resolve([])])
       .then(([c, p]) => { setCompras(c); setPagos(p); })
       .finally(() => setFetching(false));
   }, []);

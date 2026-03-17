@@ -151,7 +151,7 @@ export function ClienteDashboard({ onNavigate }) {
     setError(null);
     Promise.all([
       api.getMisCompras(state.token),
-      api.getPagos(state.token),
+      Promise.resolve([]),
     ]).then(([c, p]) => {
       setCompras(c || []);
       setPagos((p || []).filter(pago => c?.some(compra => compra.id === pago.compra_id)));

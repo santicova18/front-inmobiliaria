@@ -16,7 +16,7 @@ function ClienteDetalle({ cliente, onClose }) {
   useEffect(() => {
     Promise.all([
       api.getComprasByCliente(cliente.id, state.token),
-      api.getPagos(state.token),
+      Promise.resolve([]),
     ]).then(([c, p]) => {
       setCompras(c);
       setPagos(p.filter(pago => c.some(compra => compra.id === pago.compra_id)));
