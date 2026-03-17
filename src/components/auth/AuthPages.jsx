@@ -35,8 +35,8 @@ export function LoginPage({ onNavigate }) {
     try {
       const data = await api.login(form);
       
-      // El backend retorna: {"login successfuly": "token_aqui"}
-      // También puede retornar: {"access_token": "token_aqui", "token_type": "bearer"}
+      // El backend retorna: {"token": "eyJ..."}
+      // También puede retornar: {"login successfuly": "token_aqui"} o {"access_token": "..."}
       
       // Buscar el token en cualquier formato
       const token = data.token || data.access_token || data["login successfuly"];

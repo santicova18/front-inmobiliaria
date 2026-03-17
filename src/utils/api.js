@@ -2,7 +2,7 @@ const BASE_URL =
     import.meta.env.VITE_API_URL || "https://proyecto-inmobiliario-production.up.railway.app";
 
 // Función para decodificar JWT token (sin verificación - solo para obtener datos)
-function decodeJWT(token) {
+export function decodeJWT(token) {
     try {
         const parts = token.split('.');
         if (parts.length !== 3) return null;

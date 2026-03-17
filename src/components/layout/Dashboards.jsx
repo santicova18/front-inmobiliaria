@@ -140,18 +140,25 @@ export function AdminDashboard({ onNavigate }) {
 }
 
 export function ClienteDashboard({ onNavigate }) {
-  const { state } = useApp();
+  const { state, notify } = useApp();
   const [compras, setCompras] = useState([]);
   const [pagos, setPagos] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
+    setLoading(true);
+    setError(null);
     Promise.all([
-      api.getComprasByCliente(state.user.id, state.token),
+      api.getMisCompras(state.token),
       api.getPagos(state.token),
     ]).then(([c, p]) => {
-      setCompras(c);
-      setPagos(p.filter(pago => c.some(compra => compra.id === pago.compra_id)));
+      setCompras(c || []);
+      setPagos((p || []).filter(pago => c?.some(compra => compra.id === pago.compra_id)));
+    }).catch((err) => {
+      console.error("Error loading client data:", err);
+      setError(err.message || "Error al cargar los datos");
+      notify("Error al cargar tus datos. Intenta de nuevo.", "error");
     }).finally(() => setLoading(false));
   }, []);
 
