@@ -5,18 +5,33 @@ import { Button, Input } from "../ui";
 
 function AuthCard({ children, title, subtitle }) {
   return (
-    <div className="min-h-screen bg-slate-950 flex items-center justify-center p-4">
-      {/* Background */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-20%,rgba(20,184,166,0.15),transparent)]" />
-      <div className="relative w-full max-w-md">
-        {/* Logo */}
-        <div className="flex items-center gap-3 mb-8 justify-center">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold">IL</div>
-          <span className="text-white font-bold text-xl">InmoLotes</span>
+    <div className="min-h-screen flex">
+      {/* Left side - decorative */}
+      <div className="hidden md:flex w-1/2 bg-gradient-to-br from-emerald-600 to-indigo-700 items-center justify-center p-12 relative overflow-hidden">
+        <div className="absolute inset-0 opacity-10">
+          <svg className="w-full h-full" viewBox="0 0 400 400" fill="none">
+            <circle cx="100" cy="100" r="80" stroke="white" strokeWidth="2" />
+            <circle cx="300" cy="150" r="60" stroke="white" strokeWidth="2" />
+            <circle cx="200" cy="300" r="100" stroke="white" strokeWidth="2" />
+            <circle cx="350" cy="350" r="40" stroke="white" strokeWidth="2" />
+          </svg>
         </div>
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
-          <h2 className="text-xl font-bold text-white mb-1">{title}</h2>
-          <p className="text-slate-400 text-sm mb-7">{subtitle}</p>
+        <div className="relative z-10 text-center text-white">
+          <div className="w-16 h-16 rounded-2xl bg-white/20 backdrop-blur flex items-center justify-center text-white font-bold text-2xl mx-auto mb-6">IL</div>
+          <h1 className="text-4xl font-bold mb-4">InmoLotes</h1>
+          <p className="text-lg text-white/80 max-w-sm">Tu plataforma inmobiliaria de confianza para gestionar lotes y proyectos</p>
+        </div>
+      </div>
+
+      {/* Right side - form */}
+      <div className="w-full md:w-1/2 bg-white flex items-center justify-center p-8">
+        <div className="w-full max-w-sm">
+          <div className="md:hidden flex items-center gap-3 mb-8 justify-center">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500 to-indigo-500 flex items-center justify-center text-white font-bold">IL</div>
+            <span className="text-slate-900 font-bold text-xl">InmoLotes</span>
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 mb-1">{title}</h2>
+          <p className="text-gray-500 text-sm mb-7">{subtitle}</p>
           {children}
         </div>
       </div>
@@ -92,11 +107,11 @@ export function LoginPage({ onNavigate }) {
           value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} required />
         <Button className="w-full" loading={loading}>Iniciar Sesión</Button>
       </form>
-      <div className="mt-5 text-center text-sm text-slate-400">
-        ¿No tienes cuenta? <button onClick={() => onNavigate("register")} className="text-teal-400 hover:text-teal-300 font-medium">Regístrate</button>
+      <div className="mt-5 text-center text-sm text-gray-500">
+        ¿No tienes cuenta? <button onClick={() => onNavigate("register")} className="text-emerald-600 hover:text-emerald-700 font-medium">Regístrate</button>
       </div>
       <div className="mt-3 text-center">
-        <button onClick={() => onNavigate("forgot")} className="text-xs text-slate-500 hover:text-slate-400">¿Olvidaste tu contraseña?</button>
+        <button onClick={() => onNavigate("forgot")} className="text-xs text-gray-400 hover:text-gray-600">¿Olvidaste tu contraseña?</button>
       </div>
     </AuthCard>
   );
@@ -136,8 +151,8 @@ export function RegisterPage({ onNavigate }) {
     return (
       <AuthCard title="¡Cuenta Creada!" subtitle="Revisa tu correo para verificar tu cuenta">
         <div className="text-center py-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-900/30 flex items-center justify-center text-emerald-400 text-2xl">✓</div>
-          <p className="text-slate-300 mb-4">Hemos enviado un correo de verificación a <strong>{form.email}</strong></p>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-2xl">✓</div>
+          <p className="text-gray-600 mb-4">Hemos enviado un correo de verificación a <strong>{form.email}</strong></p>
           <Button variant="outline" onClick={() => onNavigate("login")}>Volver al Login</Button>
         </div>
       </AuthCard>
@@ -157,8 +172,8 @@ export function RegisterPage({ onNavigate }) {
           value={form.password} onChange={e => setForm({ ...form, password: e.target.value })} />
         <Button className="w-full" loading={loading}>Crear Cuenta</Button>
       </form>
-      <div className="mt-5 text-center text-sm text-slate-400">
-        ¿Ya tienes cuenta? <button onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300 font-medium">Inicia Sesión</button>
+      <div className="mt-5 text-center text-sm text-gray-500">
+        ¿Ya tienes cuenta? <button onClick={() => onNavigate("login")} className="text-emerald-600 hover:text-emerald-700 font-medium">Inicia Sesión</button>
       </div>
     </AuthCard>
   );
@@ -187,8 +202,8 @@ export function ForgotPasswordPage({ onNavigate }) {
     return (
       <AuthCard title="Correo Enviado" subtitle="Hemos enviado instrucciones a tu correo">
         <div className="text-center py-6">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-teal-900/30 flex items-center justify-center text-teal-400 text-2xl">✓</div>
-          <p className="text-slate-300 mb-4">Si el correo <strong>{email}</strong> existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.</p>
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 text-2xl">✓</div>
+          <p className="text-gray-600 mb-4">Si el correo <strong>{email}</strong> existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.</p>
           <Button variant="outline" onClick={() => onNavigate("login")}>Volver al Login</Button>
         </div>
       </AuthCard>
@@ -202,8 +217,8 @@ export function ForgotPasswordPage({ onNavigate }) {
           value={email} onChange={e => setEmail(e.target.value)} required />
         <Button className="w-full" loading={loading}>Enviar Instrucciones</Button>
       </form>
-      <div className="mt-5 text-center text-sm text-slate-400">
-        ¿Recordaste tu contraseña? <button onClick={() => onNavigate("login")} className="text-teal-400 hover:text-teal-300 font-medium">Inicia Sesión</button>
+      <div className="mt-5 text-center text-sm text-gray-500">
+        ¿Recordaste tu contraseña? <button onClick={() => onNavigate("login")} className="text-emerald-600 hover:text-emerald-700 font-medium">Inicia Sesión</button>
       </div>
     </AuthCard>
   );

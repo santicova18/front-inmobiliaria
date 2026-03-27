@@ -32,11 +32,11 @@ export function Spinner({ size = "md" }) {
 export function Button({ children, variant = "primary", size = "md", loading, className = "", ...props }) {
   const base = "inline-flex items-center justify-center gap-2 font-semibold rounded-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed";
   const variants = {
-    primary: "bg-teal-600 hover:bg-teal-500 text-white shadow-lg shadow-teal-900/30",
-    secondary: "bg-slate-700 hover:bg-slate-600 text-white",
+    primary: "bg-emerald-600 hover:bg-emerald-500 text-white shadow-sm",
+    secondary: "bg-gray-100 hover:bg-gray-200 text-slate-700",
     danger: "bg-red-600 hover:bg-red-500 text-white",
-    ghost: "hover:bg-slate-700 text-slate-300",
-    outline: "border border-slate-600 hover:bg-slate-700 text-slate-200",
+    ghost: "hover:bg-gray-100 text-slate-600",
+    outline: "border border-gray-300 hover:bg-gray-50 text-slate-700",
   };
   const sizes = { sm: "px-3 py-1.5 text-sm", md: "px-4 py-2 text-sm", lg: "px-6 py-3 text-base" };
   return (
@@ -51,12 +51,12 @@ export function Button({ children, variant = "primary", size = "md", loading, cl
 export function Input({ label, error, className = "", ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
-      {label && <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</label>}
+      {label && <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</label>}
       <input
-        className={`w-full px-4 py-2.5 bg-slate-800 border ${error ? "border-red-500" : "border-slate-700"} rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors ${className}`}
+        className={`w-full px-4 py-2.5 bg-white border ${error ? "border-red-500" : "border-gray-300"} rounded-xl text-slate-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }
@@ -65,14 +65,14 @@ export function Input({ label, error, className = "", ...props }) {
 export function Select({ label, error, children, className = "", ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
-      {label && <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</label>}
+      {label && <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</label>}
       <select
-        className={`w-full px-4 py-2.5 bg-slate-800 border ${error ? "border-red-500" : "border-slate-700"} rounded-xl text-slate-100 focus:outline-none focus:border-teal-500 transition-colors ${className}`}
+        className={`w-full px-4 py-2.5 bg-white border ${error ? "border-red-500" : "border-gray-300"} rounded-xl text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors ${className}`}
         {...props}
       >
         {children}
       </select>
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }
@@ -81,12 +81,12 @@ export function Select({ label, error, children, className = "", ...props }) {
 export function Textarea({ label, error, className = "", ...props }) {
   return (
     <div className="flex flex-col gap-1.5">
-      {label && <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">{label}</label>}
+      {label && <label className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label}</label>}
       <textarea
-        className={`w-full px-4 py-2.5 bg-slate-800 border ${error ? "border-red-500" : "border-slate-700"} rounded-xl text-slate-100 placeholder-slate-500 focus:outline-none focus:border-teal-500 transition-colors resize-none ${className}`}
+        className={`w-full px-4 py-2.5 bg-white border ${error ? "border-red-500" : "border-gray-300"} rounded-xl text-slate-900 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-colors resize-none ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error && <p className="text-xs text-red-500">{error}</p>}
     </div>
   );
 }
@@ -94,7 +94,7 @@ export function Textarea({ label, error, className = "", ...props }) {
 // ─── Card ─────────────────────────────────────────────────────────────────────
 export function Card({ children, className = "", ...props }) {
   return (
-    <div className={`bg-slate-800 border border-slate-700 rounded-2xl ${className}`} {...props}>
+    <div className={`bg-white border border-gray-100 shadow-sm rounded-2xl ${className}`} {...props}>
       {children}
     </div>
   );
@@ -103,12 +103,12 @@ export function Card({ children, className = "", ...props }) {
 // ─── Badge ────────────────────────────────────────────────────────────────────
 export function Badge({ children, variant = "default" }) {
   const variants = {
-    default: "bg-slate-700 text-slate-300",
-    success: "bg-emerald-900/50 text-emerald-400 border border-emerald-700/50",
-    warning: "bg-amber-900/50 text-amber-400 border border-amber-700/50",
-    danger: "bg-red-900/50 text-red-400 border border-red-700/50",
-    info: "bg-sky-900/50 text-sky-400 border border-sky-700/50",
-    purple: "bg-violet-900/50 text-violet-400 border border-violet-700/50",
+    default: "bg-gray-100 text-gray-600",
+    success: "bg-emerald-100 text-emerald-700",
+    warning: "bg-amber-100 text-amber-700",
+    danger: "bg-red-100 text-red-700",
+    info: "bg-sky-100 text-sky-700",
+    purple: "bg-violet-100 text-violet-700",
   };
   return (
     <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold ${variants[variant]}`}>
@@ -129,11 +129,11 @@ export function Modal({ open, onClose, title, children, size = "md" }) {
   const sizes = { sm: "max-w-md", md: "max-w-xl", lg: "max-w-3xl", xl: "max-w-5xl" };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
-      <div className={`relative w-full ${sizes[size]} bg-slate-900 border border-slate-700 rounded-2xl shadow-2xl`}>
-        <div className="flex items-center justify-between p-6 border-b border-slate-700">
-          <h2 className="text-lg font-bold text-white">{title}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white transition-colors">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div className={`relative w-full ${sizes[size]} bg-white rounded-2xl shadow-2xl`}>
+        <div className="flex items-center justify-between p-6 border-b border-gray-100">
+          <h2 className="text-lg font-bold text-slate-900">{title}</h2>
+          <button onClick={onClose} className="text-gray-400 hover:text-slate-600 transition-colors">
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -149,9 +149,9 @@ export function Modal({ open, onClose, title, children, size = "md" }) {
 export function EmptyState({ icon, title, description, action }) {
   return (
     <div className="flex flex-col items-center justify-center py-16 text-center">
-      <div className="text-5xl mb-4">{icon}</div>
-      <h3 className="text-lg font-semibold text-slate-200 mb-2">{title}</h3>
-      <p className="text-slate-500 text-sm max-w-xs mb-6">{description}</p>
+      <div className="mb-4">{icon}</div>
+      <h3 className="text-lg font-semibold text-slate-700 mb-2">{title}</h3>
+      <p className="text-gray-500 text-sm max-w-xs mb-6">{description}</p>
       {action}
     </div>
   );
@@ -162,8 +162,8 @@ export function PageHeader({ title, subtitle, action }) {
   return (
     <div className="flex items-start justify-between mb-8">
       <div>
-        <h1 className="text-2xl font-bold text-white tracking-tight">{title}</h1>
-        {subtitle && <p className="text-slate-400 text-sm mt-1">{subtitle}</p>}
+        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">{title}</h1>
+        {subtitle && <p className="text-gray-500 text-sm mt-1">{subtitle}</p>}
       </div>
       {action}
     </div>
@@ -173,20 +173,22 @@ export function PageHeader({ title, subtitle, action }) {
 // ─── Stat Card ────────────────────────────────────────────────────────────────
 export function StatCard({ label, value, icon, color = "teal", trend }) {
   const colors = {
-    teal: "from-teal-600/20 to-teal-800/10 border-teal-700/30 text-teal-400",
-    amber: "from-amber-600/20 to-amber-800/10 border-amber-700/30 text-amber-400",
-    blue: "from-blue-600/20 to-blue-800/10 border-blue-700/30 text-blue-400",
-    red: "from-red-600/20 to-red-800/10 border-red-700/30 text-red-400",
-    purple: "from-violet-600/20 to-violet-800/10 border-violet-700/30 text-violet-400",
+    teal: "bg-emerald-50 text-emerald-600",
+    amber: "bg-amber-50 text-amber-600",
+    blue: "bg-indigo-50 text-indigo-600",
+    red: "bg-red-50 text-red-600",
+    purple: "bg-violet-50 text-violet-600",
   };
   return (
-    <div className={`bg-gradient-to-br ${colors[color]} border rounded-2xl p-5`}>
+    <div className="bg-white border border-gray-100 shadow-sm rounded-2xl p-5">
       <div className="flex items-center justify-between mb-3">
-        <span className="text-2xl">{icon}</span>
-        {trend && <span className={`text-xs font-semibold ${trend > 0 ? "text-emerald-400" : "text-red-400"}`}>{trend > 0 ? "+" : ""}{trend}%</span>}
+        <div className={`w-10 h-10 rounded-xl ${colors[color]} flex items-center justify-center`}>
+          {icon}
+        </div>
+        {trend && <span className={`text-xs font-semibold ${trend > 0 ? "text-emerald-600" : "text-red-600"}`}>{trend > 0 ? "+" : ""}{trend}%</span>}
       </div>
-      <p className="text-2xl font-bold text-white">{value}</p>
-      <p className="text-xs text-slate-400 mt-1">{label}</p>
+      <p className="text-2xl font-bold text-slate-900">{value}</p>
+      <p className="text-xs text-gray-500 mt-1">{label}</p>
     </div>
   );
 }
