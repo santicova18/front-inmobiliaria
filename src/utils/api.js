@@ -1,5 +1,5 @@
 const BASE_URL =
-    import.meta.env.VITE_API_URL || "https://proyecto-inmobiliario-production.up.railway.app";
+    import.meta.env.VITE_API_URL || "https://proyecto-inmobiliario-t8ph.onrender.com";
 
 // Función para decodificar JWT token (sin verificación - solo para obtener datos)
 export function decodeJWT(token) {
